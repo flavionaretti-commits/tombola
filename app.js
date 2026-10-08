@@ -48,13 +48,76 @@
       if (!Number.isInteger(n) || n < 1 || n > 90 || unique.has(n)) return false;
       unique.add(n); return true;
     }) : [];
-    const savedUrnPositions = Array.isArray(raw.urnPositions) && raw.urnPositions.length === 30 &&
+    const savedUrnPositions = Array.isArray(raw.urnPositions) && raw.urnPositions.length === 50 &&
       raw.urnPositions.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) &&
         p.x >= 90 && p.x <= 430 && p.y >= 40 && p.y <= 370)
       ? raw.urnPositions.map(p => ({x:p.x,y:p.y})) : null;
     return { drawn, theme: raw.theme === 'day' ? 'day' : 'night', sound: raw.sound !== false, urnPositions: savedUrnPositions };
   }
   const state = restore();
+
+  /* Gabbia sferica ruotante attorno a un ASSE ORIZZONTALE.
+     Le traiettorie sono curve prospettiche, non una rotazione 2D. */
+  const cageFront = $('cageFront'), cageBack = $('cageBack');
+  const cageCurves = [];
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  for (let longitude = 0; longitude < 12; longitude++) {
+    cageCurves.push({kind:'meridian',level:longitude * Math.PI / 6});
+  }
+  for (const latitude of [-1.08,-.72,-.36,0,.36,.72,1.08]) {
+    cageCurves.push({kind:'parallel',level:latitude});
+  }
+  const cagePaths = cageCurves.map(() => {
+    const far = document.createElementNS(SVGNS,'path');
+    const near = document.createElementNS(SVGNS,'path');
+    cageBack.appendChild(far);
+    cageFront.appendChild(near);
+    return {far,near};
+  });
+  let cageAngle = 0, cageFrame = null, cagePreviousTime = 0;
+  function drawCage(angle) {
+    const c = Math.cos(angle),s = Math.sin(angle),R=157;
+    for (let k = 0; k < cageCurves.length; k++) {
+      const curve = cageCurves[k];
+      let near='',far='',previousNear=null;
+      const segments = 80;
+      for (let i=0;i<=segments;i++) {
+        const fraction = i/segments;
+        const latitude = curve.kind === 'meridian' ? -Math.PI/2+fraction*Math.PI : curve.level;
+        const longitude = curve.kind === 'meridian' ? curve.level : -Math.PI+2*Math.PI*fraction;
+        const cp=Math.cos(latitude),sp=Math.sin(latitude),cl=Math.cos(longitude),sl=Math.sin(longitude);
+        const x=cp*cl, y=sp*c-cp*sl*s, z=sp*s+cp*sl*c;
+        const px=(260+R*x).toFixed(1),py=(207+R*y).toFixed(1);
+        const nearSide=z>=0;
+        if (nearSide) near+=(previousNear===true?'L':'M')+px+' '+py+' ';
+        else far+=(previousNear===false?'L':'M')+px+' '+py+' ';
+        previousNear=nearSide;
+      }
+      cagePaths[k].near.setAttribute('d',near);
+      cagePaths[k].far.setAttribute('d',far);
+    }
+  }
+  function startCageRotation() {
+    if (motionReduced || cageFrame !== null) return;
+    cagePreviousTime=0;
+    const tick=(time)=>{
+      if (!drawing) { cageFrame=null; return; }
+      const delta=cagePreviousTime?Math.min(60,time-cagePreviousTime):16;
+      cagePreviousTime=time;
+      // Segno negativo: la metà anteriore del reticolo scende dall'alto.
+      cageAngle -= delta*(2*Math.PI/1650);
+      drawCage(cageAngle);
+      cageFrame=requestAnimationFrame(tick);
+    };
+    cageFrame=requestAnimationFrame(tick);
+  }
+  function stopCageRotation() {
+    if(cageFrame!==null)cancelAnimationFrame(cageFrame);
+    cageFrame=null;
+    drawCage(cageAngle);
+  }
+  drawCage(0);
+
   function persist() {
     try { localStorage.setItem(STORE, JSON.stringify(state)); } catch { /* app still playable without persistent storage */ }
   }
@@ -141,10 +204,10 @@
   }
 
 
-  /* Le 30 palline rappresentano visivamente i numeri rimasti:
-     fino a 60 estrazioni rimangono 30, poi una scompare a ogni estrazione. */
+  /* Le 50 palline decorano l'urna: 50 fino alla 40ª estrazione,
+     poi una pallina scompare alla volta, dalla 41ª. */
   function urnVisibleCount() {
-    return Math.min(30, 90 - state.drawn.length);
+    return Math.min(50, 90 - state.drawn.length);
   }
 
   function rememberBallPositions() {
@@ -196,9 +259,9 @@
   function settleUnderGravity() {
     const count = urnVisibleCount();
     if (!count) { positionUrnBalls(); rememberBallPositions(); return; }
-    const radius = 17.35, circleRadius = 143.5, diameter = radius * 2;
+    const radius = 16.08, circleRadius = 146.1, diameter = radius * 2;
     const moving = ballPositions.slice(0, count).map(p => ({x:p.x,y:p.y,vx:0,vy:0}));
-    for (let step = 0; step < 350; step++) {
+    for (let step = 0; step < 300; step++) {
       const previous = moving.map(p => ({x:p.x,y:p.y}));
       for (const p of moving) {
         p.vy = (p.vy + .36) * .94;
@@ -206,7 +269,7 @@
         p.x += p.vx;
         p.y += p.vy;
       }
-      for (let pass = 0; pass < 5; pass++) {
+      for (let pass = 0; pass < 4; pass++) {
         for (let i = 0; i < count; i++) {
           for (let j = i + 1; j < count; j++) {
             const a = moving[i],b = moving[j];
@@ -366,14 +429,16 @@
     render();
     startRattle();
     startBallMixing();
+    startCageRotation();
     const n = randomRemainingNumber();
     await delay(motionReduced ? 230 : 1500);
     clearRattle();
     stopBallMixing();
+    stopCageRotation();
     scene.classList.remove('is-spinning');
     await flyBall(n);
     state.drawn.push(n);
-    if (state.drawn.length >= 61) settleUnderGravity();
+    if (state.drawn.length >= 41) settleUnderGravity();
     else { positionUrnBalls(); rememberBallPositions(); }
     persist();
     drawing = false;
@@ -388,7 +453,7 @@
   function undo() {
     if (drawing || state.drawn.length === 0) return;
     const removed = state.drawn.pop();
-    if (state.drawn.length >= 60) settleUnderGravity();
+    if (state.drawn.length >= 40) settleUnderGravity();
     else positionUrnBalls();
     rememberBallPositions();
     persist(); render({announce:true}); smallSound();
@@ -522,7 +587,7 @@
   });
 
   if (state.urnPositions) ballPositions = state.urnPositions.map(p => ({...p}));
-  else if (state.drawn.length > 60) settleUnderGravity();
+  else if (state.drawn.length > 40) settleUnderGravity();
   setTheme(state.theme);
   setSound(state.sound);
   render();
