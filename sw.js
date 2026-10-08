@@ -1,5 +1,5 @@
 /* Offline shell. Network-first navigation prevents stale HTML after GitHub Pages updates. */
-const CACHE = 'tombola-shell-v1';
+const CACHE = 'tombola-shell-v1-1';
 const ASSETS = ['./','./index.html','./style.css','./app.js','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
