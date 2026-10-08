@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css?v=1.2">
+  <link rel="stylesheet" href="style.css?v=1.3">
   <title>TOMBOLA! — L'urna dei numeri</title>
 </head>
 <body data-theme="night">
@@ -22,6 +22,7 @@
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.4 14.5A8.6 8.6 0 0 1 9.5 3.6 8.6 8.6 0 1 0 20.4 14.5Z"/></symbol>
     <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
     <symbol id="i-minimize" viewBox="0 0 24 24"><path d="M3 8h5V3m8 0v5h5M8 21v-5H3m18 0h-5v5"/></symbol>
+    <symbol id="i-project" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol>
     <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.5 2.5 0 1 1 4.2 1.9c-1.5 1.2-2 1.5-2 3m0 3.5h.01"/></symbol>
     <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-2"/></symbol>
     <symbol id="i-restart" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></symbol>
@@ -41,6 +42,7 @@
         <div class="toolbar" role="group" aria-label="Opzioni">
           <button id="soundButton" class="icon-button" aria-label="Disattiva suoni" title="Attiva o disattiva i suoni"><svg><use href="#i-volume"/></svg></button>
           <button id="themeButton" class="icon-button" aria-label="Passa alla modalità giorno" title="Giorno / notte"><svg><use href="#i-sun"/></svg></button>
+          <button id="projectionButton" class="icon-button projection-toggle" type="button" aria-label="Proietta il tabellone a tutto schermo" aria-pressed="false" title="Proietta soltanto il tabellone"><svg><use href="#i-project"/></svg><span>PROIETTA</span></button>
           <button id="fullscreenButton" class="icon-button" aria-label="Schermo intero" title="Schermo intero"><svg><use href="#i-expand"/></svg></button>
           <button id="helpButton" class="icon-button" aria-label="Istruzioni" title="Istruzioni"><svg><use href="#i-help"/></svg></button>
         </div>
@@ -135,14 +137,34 @@
       </section>
     </main>
 
-    <footer class="bottom-decoration"><span>✧ &nbsp; UN PICCOLO CLASSICO, UNA GRANDE FESTA &nbsp; ✧</span><span>Creato da Flavio Naretti · TOMBOLA! v1.2</span></footer>
+    <footer class="bottom-decoration"><span>✧ &nbsp; UN PICCOLO CLASSICO, UNA GRANDE FESTA &nbsp; ✧</span><span>Creato da Flavio Naretti · TOMBOLA! v1.3</span></footer>
   </div>
 
+
+  <section id="projectionView" class="projection-view" role="region" aria-label="Tabellone della tombola in proiezione" hidden>
+    <header class="projection-header">
+      <div class="projection-heading"><div class="projection-kicker">LA FESTA DEI NUMERI</div><h2>TOMBOLA<span>!</span> <small>TABELLONE</small></h2></div>
+      <div class="projection-stats">
+        <div class="projection-counter"><strong id="projectionCount">0</strong><span>/ 90 ESTRATTI</span></div>
+        <div class="projection-latest" aria-live="polite"><span>ULTIMO</span><strong id="projectionLatest">–</strong></div>
+        <button id="closeProjectionButton" class="projection-close" type="button" aria-label="Esci dalla proiezione"><svg><use href="#i-close"/></svg><span>ESCI</span></button>
+      </div>
+    </header>
+    <div class="projection-frame"><div id="projectionBoard" class="projection-board" role="grid" aria-label="Tabellone della tombola a tutto schermo"></div></div>
+    <footer class="projection-footer">
+      <span class="projection-message" id="projectionMessage">Pronti per l'estrazione</span>
+      <div class="projection-actions">
+        <button id="projectionUndoButton" class="projection-undo" type="button" disabled><svg><use href="#i-undo"/></svg><span>ANNULLA</span></button>
+        <button id="projectionDrawButton" class="projection-draw" type="button"><svg><use href="#i-rotate"/></svg><span id="projectionDrawLabel">ESTRAI UN NUMERO</span></button>
+      </div>
+    </footer>
+  </section>
+
   <dialog id="resetDialog" class="modal"><div class="dialog-ornament">✦</div><h2>Nuova partita?</h2><p>Il tabellone tornerà vuoto e tutti i 90 numeri saranno nuovamente disponibili.</p><div class="dialog-actions"><button type="button" id="cancelReset" class="dialog-cancel">CONTINUA A GIOCARE</button><button type="button" id="confirmReset" class="dialog-danger">AZZERA IL TABELLONE</button></div></dialog>
-  <dialog id="helpDialog" class="modal help-modal"><button type="button" id="closeHelp" class="modal-close" aria-label="Chiudi istruzioni"><svg><use href="#i-close"/></svg></button><div class="dialog-ornament">✦</div><h2>Come si gioca</h2><p>Gira la manovella o premi <strong>ESTRAI UN NUMERO</strong>. La pallina esce dall'urna e il numero viene evidenziato sul tabellone.</p><div class="instruction-grid"><div><strong>90 numeri</strong><span>Ogni numero esce una sola volta, senza ripetizioni.</span></div><div><strong>Proiezione</strong><span>Premi il pulsante schermo intero, in alto a destra.</span></div><div><strong>Si ricomincia</strong><span>Puoi annullare l'ultimo numero o avviare una nuova partita.</span></div><div><strong>Tutto salvato</strong><span>Le estrazioni restano memorizzate anche chiudendo l'app sullo stesso dispositivo.</span></div></div><p class="help-shortcuts">Tastiera: <kbd>Spazio</kbd> oppure <kbd>E</kbd> per estrarre · <kbd>Z</kbd> per annullare · <kbd>F</kbd> per schermo intero</p></dialog>
+  <dialog id="helpDialog" class="modal help-modal"><button type="button" id="closeHelp" class="modal-close" aria-label="Chiudi istruzioni"><svg><use href="#i-close"/></svg></button><div class="dialog-ornament">✦</div><h2>Come si gioca</h2><p>Gira la manovella o premi <strong>ESTRAI UN NUMERO</strong>. La pallina esce dall'urna e il numero viene evidenziato sul tabellone.</p><div class="instruction-grid"><div><strong>90 numeri</strong><span>Ogni numero esce una sola volta, senza ripetizioni.</span></div><div><strong>Proiezione</strong><span>Premi PROIETTA per ingrandire soltanto il tabellone e continuare a estrarre i numeri.</span></div><div><strong>Si ricomincia</strong><span>Puoi annullare l'ultimo numero o avviare una nuova partita.</span></div><div><strong>Tutto salvato</strong><span>Le estrazioni restano memorizzate anche chiudendo l'app sullo stesso dispositivo.</span></div></div><p class="help-shortcuts">Tastiera: <kbd>Spazio</kbd> oppure <kbd>E</kbd> per estrarre · <kbd>Z</kbd> per annullare · <kbd>F</kbd> per schermo intero · <kbd>P</kbd> per proiettare</p></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="screenReaderAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
-  <script src="app.js?v=1.2" defer></script>
+  <script src="app.js?v=1.3" defer></script>
 </body>
 </html>

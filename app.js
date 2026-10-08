@@ -11,6 +11,12 @@
   const themeButton = $('themeButton');
   const soundButton = $('soundButton');
   const fullscreenButton = $('fullscreenButton');
+  const projectionButton = $('projectionButton');
+  const projectionView = $('projectionView');
+  const projectionBoard = $('projectionBoard');
+  const projectionDrawButton = $('projectionDrawButton');
+  const projectionUndoButton = $('projectionUndoButton');
+  const closeProjectionButton = $('closeProjectionButton');
   const resultBall = $('resultBall');
   const resultNumber = $('resultNumber');
   const resultSubtitle = $('resultSubtitle');
@@ -23,6 +29,8 @@
   let audioContext = null;
   const motionReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   const cells = [];
+  const projectionCells = [];
+  let projectionActive = false;
 
   function restore() {
     let raw;
@@ -48,6 +56,10 @@
     el.setAttribute('aria-selected', 'false');
     board.appendChild(el);
     cells.push(el);
+    const projected = el.cloneNode(true);
+    projected.classList.add('projection-cell');
+    projectionBoard.appendChild(projected);
+    projectionCells.push(projected);
   }
 
   function render({ newest = null, announce = false } = {}) {
@@ -56,18 +68,22 @@
     for (let i = 0; i < 90; i++) {
       const n = i + 1;
       const selected = drawn.has(n);
-      cells[i].classList.toggle('is-drawn', selected);
-      cells[i].classList.toggle('is-latest', n === latest);
-      cells[i].setAttribute('aria-selected', String(selected));
-      cells[i].setAttribute('aria-label', `Numero ${n}, ${selected ? (n === latest ? 'ultimo estratto' : 'estratto') : 'da estrarre'}`);
-      if (newest === n) {
-        cells[i].classList.remove('just-drawn');
-        void cells[i].offsetWidth;
-        cells[i].classList.add('just-drawn');
-        setTimeout(() => cells[i].classList.remove('just-drawn'), 850);
+      for (const cell of [cells[i], projectionCells[i]]) {
+        cell.classList.toggle('is-drawn', selected);
+        cell.classList.toggle('is-latest', n === latest);
+        cell.setAttribute('aria-selected', String(selected));
+        cell.setAttribute('aria-label', `Numero ${n}, ${selected ? (n === latest ? 'ultimo estratto' : 'estratto') : 'da estrarre'}`);
+        if (newest === n) {
+          cell.classList.remove('just-drawn');
+          void cell.offsetWidth;
+          cell.classList.add('just-drawn');
+          setTimeout(() => cell.classList.remove('just-drawn'), 850);
+        }
       }
     }
     $('drawCount').textContent = String(state.drawn.length);
+    $('projectionCount').textContent = String(state.drawn.length);
+    $('projectionLatest').textContent = latest === null ? '–' : String(latest);
     resultNumber.textContent = latest === null ? '?' : String(latest);
     resultBall.classList.toggle('has-result', latest !== null);
     resultBall.classList.toggle('finished', state.drawn.length === 90);
@@ -97,6 +113,10 @@
     const ended = state.drawn.length === 90;
     drawButton.disabled = drawing || ended;
     machineButton.disabled = drawing || ended;
+    projectionDrawButton.disabled = drawing || ended;
+    projectionUndoButton.disabled = drawing || state.drawn.length === 0;
+    $('projectionDrawLabel').textContent = drawing ? 'ESTRAZIONE IN CORSO…' : ended ? 'PARTITA COMPLETATA' : 'ESTRAI UN NUMERO';
+    $('projectionMessage').textContent = drawing ? 'Le palline si mescolano…' : ended ? 'Tutti i 90 numeri estratti!' : latest === null ? 'Pronti per l’estrazione' : 'Ultimo estratto: ' + latest;
     undoButton.disabled = drawing || state.drawn.length === 0;
     resetButton.disabled = drawing || state.drawn.length === 0;
     $('drawButtonLabel').textContent = drawing ? 'L’URNA STA GIRANDO…' : ended ? 'PARTITA COMPLETATA' : 'ESTRAI UN NUMERO';
@@ -307,6 +327,41 @@
     }
   }
 
+  function openProjection() {
+    if (projectionActive || isDialogOpen()) return;
+    projectionActive = true;
+    projectionView.hidden = false;
+    document.body.classList.add('projection-active');
+    projectionButton.setAttribute('aria-pressed', 'true');
+    render();
+    closeProjectionButton.focus({ preventScroll: true });
+    if (typeof projectionView.requestFullscreen === 'function') {
+      // iPad/iPhone fallback: the fixed projection view still fills the screen.
+      try {
+        const pending = projectionView.requestFullscreen();
+        if (pending?.catch) pending.catch(() => {});
+      } catch { /* fixed full-screen view remains available */ }
+    }
+  }
+  async function closeProjection() {
+    if (!projectionActive) return;
+    projectionActive = false;
+    if (document.fullscreenElement === projectionView) {
+      try { await document.exitFullscreen(); } catch { /* fixed overlay fallback */ }
+    }
+    projectionView.hidden = true;
+    document.body.classList.remove('projection-active');
+    projectionButton.setAttribute('aria-pressed', 'false');
+    projectionButton.focus({ preventScroll: true });
+  }
+  projectionButton.addEventListener('click',openProjection);
+  closeProjectionButton.addEventListener('click',closeProjection);
+  projectionDrawButton.addEventListener('click',draw);
+  projectionUndoButton.addEventListener('click',undo);
+  document.addEventListener('fullscreenchange',() => {
+    if (projectionActive && document.fullscreenElement !== projectionView) closeProjection();
+  });
+
   drawButton.addEventListener('click',draw);
   machineButton.addEventListener('click',draw);
   undoButton.addEventListener('click',undo);
@@ -327,12 +382,14 @@
     const target = event.target;
     if (isDialogOpen() || event.altKey || event.ctrlKey || event.metaKey || /^(input|textarea|select)$/i.test(target?.tagName || '')) return;
     const key = event.key.toLowerCase();
+    if (key === 'escape' && projectionActive) { event.preventDefault(); closeProjection(); return; }
+    if (key === 'p') { event.preventDefault(); projectionActive ? closeProjection() : openProjection(); return; }
     if (key === 'e' || (key === ' ' && !['BUTTON','A'].includes(target?.tagName))) {
       event.preventDefault(); draw();
     } else if (key === 'z') {
       event.preventDefault(); undo();
     } else if (key === 'f') {
-      event.preventDefault(); toggleFullscreen();
+      event.preventDefault(); projectionActive ? closeProjection() : toggleFullscreen();
     } else if (key === 'm') {
       event.preventDefault(); setSound(!state.sound);
     }
