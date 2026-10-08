@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d2831">
+  <meta name="description" content="TOMBOLA! L'urna animata e il tabellone dei 90 numeri. Estrazioni casuali senza ripetizioni, per giocare insieme anche sul grande schermo.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TOMBOLA!">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <title>TOMBOLA! — L'urna dei numeri</title>
+</head>
+<body data-theme="night">
+  <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Zm5 4a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></symbol>
+    <symbol id="i-volume-off" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5Zm5 4 6 6m0-6-6 6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.4 14.5A8.6 8.6 0 0 1 9.5 3.6 8.6 8.6 0 1 0 20.4 14.5Z"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="i-minimize" viewBox="0 0 24 24"><path d="M3 8h5V3m8 0v5h5M8 21v-5H3m18 0h-5v5"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.5 2.5 0 1 1 4.2 1.9c-1.5 1.2-2 1.5-2 3m0 3.5h.01"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5M4 9h10a6 6 0 0 1 0 12h-2"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></symbol>
+    <symbol id="i-rotate" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 4 8m-4 0v-5h5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Tombola">
+        <span class="brand-symbol" aria-hidden="true"><span>90</span></span>
+        <div class="brand-wordmark"><h1>TOMBOLA<span>!</span></h1><p>LA FESTA DEI NUMERI</p></div>
+      </div>
+      <div class="topbar-right">
+        <div class="fairness"><span class="fairness-dot"></span> Estrazione senza ripetizioni</div>
+        <div class="toolbar" role="group" aria-label="Opzioni">
+          <button id="soundButton" class="icon-button" aria-label="Disattiva suoni" title="Attiva o disattiva i suoni"><svg><use href="#i-volume"/></svg></button>
+          <button id="themeButton" class="icon-button" aria-label="Passa alla modalità giorno" title="Giorno / notte"><svg><use href="#i-sun"/></svg></button>
+          <button id="fullscreenButton" class="icon-button" aria-label="Schermo intero" title="Schermo intero"><svg><use href="#i-expand"/></svg></button>
+          <button id="helpButton" class="icon-button" aria-label="Istruzioni" title="Istruzioni"><svg><use href="#i-help"/></svg></button>
+        </div>
+      </div>
+    </header>
+
+    <main class="stage">
+      <section class="draw-section" aria-labelledby="drawHeading">
+        <div class="section-heading draw-heading"><div><span class="eyebrow">01 / L'ESTRAZIONE</span><h2 id="drawHeading">Gira la fortuna</h2></div><span class="fancy-stars" aria-hidden="true">✧ &nbsp; ✳ &nbsp; ✧</span></div>
+        <div class="draw-visuals">
+          <div class="machine-scene" id="machineScene">
+            <div class="machine-glow" aria-hidden="true"></div>
+            <svg class="lottery-machine" id="lotteryMachine" viewBox="0 0 570 530" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Urna della tombola con sfera trasparente, palline colorate e manovella dorata">
+              <defs>
+                <radialGradient id="glassFill" cx="36%" cy="20%" r="80%"><stop stop-color="#f3e9b6" stop-opacity=".27"/><stop offset=".53" stop-color="#c8d3c6" stop-opacity=".09"/><stop offset="1" stop-color="#6f9390" stop-opacity=".22"/></radialGradient>
+                <radialGradient id="metalGold" cx="26%" cy="18%" r="95%"><stop stop-color="#fff0ba"/><stop offset=".26" stop-color="#e5ba65"/><stop offset=".64" stop-color="#a86d2c"/><stop offset="1" stop-color="#ffe09a"/></radialGradient>
+                <linearGradient id="rimGold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe5a6"/><stop offset=".48" stop-color="#a16a32"/><stop offset=".76" stop-color="#fce5a0"/><stop offset="1" stop-color="#996129"/></linearGradient>
+                <linearGradient id="pedestalFill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f8d989"/><stop offset=".36" stop-color="#ba813e"/><stop offset=".78" stop-color="#845229"/><stop offset="1" stop-color="#d8aa62"/></linearGradient>
+                <linearGradient id="baseDark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4a3530"/><stop offset=".55" stop-color="#1c2930"/><stop offset="1" stop-color="#70482c"/></linearGradient>
+                <clipPath id="sphereClip"><circle cx="260" cy="207" r="164"/></clipPath>
+                <filter id="machineShadow" x="-35%" y="-35%" width="170%" height="190%"><feGaussianBlur stdDeviation="16"/></filter>
+                <filter id="ballShadow" x="-60%" y="-60%" width="230%" height="230%"><feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#10252d" flood-opacity=".43"/></filter>
+              </defs>
+              <ellipse cx="274" cy="477" rx="196" ry="23" fill="#050c14" opacity=".34" filter="url(#machineShadow)"/>
+              <!-- Struttura posteriore -->
+              <rect x="242" y="331" width="37" height="97" rx="9" fill="url(#pedestalFill)" stroke="#ffe6a2" stroke-width="3"/>
+              <rect x="230" y="393" width="63" height="29" rx="8" fill="#83602f" stroke="#e6bd75" stroke-width="4"/>
+              <path d="M164 429H359l30 24H134z" fill="url(#pedestalFill)" stroke="#f7d991" stroke-width="3"/>
+              <rect x="119" y="451" width="285" height="27" rx="8" fill="url(#baseDark)" stroke="#e2b166" stroke-width="4"/>
+              <path d="M143 458H380" stroke="#f0ca86" stroke-width="2" opacity=".6"/>
+              <rect x="194" y="456" width="134" height="17" rx="5" fill="#152e37" stroke="#a77a42" stroke-width="1.6"/>
+              <text x="261" y="468" fill="#f4d492" text-anchor="middle" font-family="Georgia,serif" font-size="11" font-weight="bold" letter-spacing="3.6">TOMBOLA</text>
+              <!-- Urna -->
+              <circle cx="260" cy="207" r="164" fill="url(#glassFill)" stroke="url(#rimGold)" stroke-width="12"/>
+              <circle cx="260" cy="207" r="150" fill="none" stroke="#ffe0a7" stroke-opacity=".54" stroke-width="2.7"/>
+              <g clip-path="url(#sphereClip)">
+                <g class="balls-inside" id="ballsInside" filter="url(#ballShadow)">
+                  <g transform="translate(179 258)"><circle r="25" fill="#f8cd77"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">7</text></g>
+                  <g transform="translate(227 283)"><circle r="25" fill="#ed8b84"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">23</text></g>
+                  <g transform="translate(280 293)"><circle r="25" fill="#92bbae"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">52</text></g>
+                  <g transform="translate(325 258)"><circle r="25" fill="#d4a5dc"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">16</text></g>
+                  <g transform="translate(195 209)"><circle r="25" fill="#99bed6"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">88</text></g>
+                  <g transform="translate(255 234)"><circle r="25" fill="#eec37b"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">40</text></g>
+                  <g transform="translate(307 211)"><circle r="24" fill="#ef958c"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">3</text></g>
+                  <g transform="translate(239 178)"><circle r="25" fill="#a6cba8"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">61</text></g>
+                </g>
+                <g class="cage-meridians" stroke="#d9a75c" stroke-opacity=".69" fill="none">
+                  <ellipse cx="260" cy="207" rx="44" ry="163" stroke-width="2.5"/>
+                  <ellipse cx="260" cy="207" rx="102" ry="163" stroke-width="2.3"/>
+                  <path d="M96 207H424M113 131H407M113 282H407M153 85H367M153 329H367" stroke-width="2"/>
+                  <ellipse cx="260" cy="207" rx="165" ry="57" stroke-width="2.8"/>
+                  <ellipse cx="260" cy="207" rx="165" ry="118" stroke-width="2.2"/>
+                </g>
+                <g class="cage-glint" fill="none" stroke="#fff4ce" stroke-linecap="round">
+                  <path d="M168 95Q130 127 128 175" stroke-width="11" opacity=".13"/>
+                  <path d="M169 97Q149 119 143 147" stroke-width="3" opacity=".68"/>
+                </g>
+              </g>
+              <circle cx="260" cy="207" r="164" fill="none" stroke="#ffefc6" stroke-opacity=".33" stroke-width="3"/>
+              <circle cx="260" cy="207" r="18" fill="url(#metalGold)" stroke="#fff1c3" stroke-width="3"/>
+              <circle cx="260" cy="207" r="6" fill="#765022"/>
+              <path d="M425 207H472" stroke="#b98643" stroke-width="15" stroke-linecap="round"/>
+              <path d="M426 203H469" stroke="#ffe3a1" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="449" cy="207" r="16" fill="url(#metalGold)" stroke="#fff2c5" stroke-width="2"/>
+              <g class="crank" id="crank">
+                <path d="M472 207V144" stroke="#734a2f" stroke-width="19" stroke-linecap="round"/>
+                <path d="M470 208V145" stroke="url(#rimGold)" stroke-width="13" stroke-linecap="round"/>
+                <circle cx="472" cy="145" r="18" fill="url(#metalGold)" stroke="#fff2cc" stroke-width="3"/>
+                <circle cx="468" cy="140" r="6" fill="#fff4d1" opacity=".85"/>
+              </g>
+              <circle cx="472" cy="207" r="13" fill="url(#metalGold)" stroke="#fff1c0" stroke-width="2"/>
+              <path d="M105 73l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#f7d78b" opacity=".6"/>
+              <path d="M431 75l2 7 7 2-7 2-2 7-2-7-7-2 7-2z" fill="#f7d78b" opacity=".7"/>
+            </svg>
+            <button class="machine-hotspot" id="machineButton" type="button" aria-label="Gira la manovella ed estrai un numero" title="Tocca l'urna per estrarre"></button>
+            <div id="spinningText" class="machine-caption"><span class="tiny-sparkle">✦</span> TOCCA L’URNA O PREMI ESTRAI <span class="tiny-sparkle">✦</span></div>
+          </div>
+          <div class="result-panel">
+            <div class="result-text"><span class="eyebrow result-eyebrow">ULTIMO NUMERO</span><span id="resultSubtitle" class="result-subtitle">Pronti a giocare?</span></div>
+            <div class="result-ball-wrap"><div id="resultBall" class="result-ball" aria-live="off"><span id="resultNumber">?</span></div></div>
+          </div>
+        </div>
+        <div class="draw-bottom">
+          <button id="drawButton" class="primary-button" type="button"><svg><use href="#i-rotate"/></svg><span id="drawButtonLabel">ESTRAI UN NUMERO</span><span class="primary-arrow" aria-hidden="true">↗</span></button>
+          <button id="undoButton" class="secondary-button" type="button" disabled title="Annulla l'ultima estrazione"><svg><use href="#i-undo"/></svg><span>ANNULLA</span></button>
+        </div>
+      </section>
+
+      <section class="board-section" aria-labelledby="boardHeading">
+        <div class="section-heading board-heading"><div><span class="eyebrow">02 / IL TABELLONE</span><h2 id="boardHeading">I numeri della sorte</h2></div><div class="counter-pill"><span class="count-stars" aria-hidden="true">✦</span><strong id="drawCount">0</strong><span class="count-divider">/</span><span>90</span><small>ESTRATTI</small></div></div>
+        <div class="board-frame"><div class="board-edge"><div class="board-grid" id="board" role="grid" aria-label="Tabellone della tombola, 90 numeri"></div></div></div>
+        <div class="board-bottom"><div class="history"><div class="eyebrow">GLI ULTIMI ESTRATTI</div><div id="historyNumbers" class="history-numbers" aria-label="Ultimi numeri estratti"><span class="empty-history">Nessun numero ancora estratto</span></div></div><button id="resetButton" class="reset-button" type="button" disabled><svg><use href="#i-restart"/></svg><span>NUOVA PARTITA</span></button></div>
+      </section>
+    </main>
+
+    <footer class="bottom-decoration"><span>✧ &nbsp; UN PICCOLO CLASSICO, UNA GRANDE FESTA &nbsp; ✧</span><span>Creato per giocare insieme · TOMBOLA! v1.0</span></footer>
+  </div>
+
+  <dialog id="resetDialog" class="modal"><div class="dialog-ornament">✦</div><h2>Nuova partita?</h2><p>Il tabellone tornerà vuoto e tutti i 90 numeri saranno nuovamente disponibili.</p><div class="dialog-actions"><button type="button" id="cancelReset" class="dialog-cancel">CONTINUA A GIOCARE</button><button type="button" id="confirmReset" class="dialog-danger">AZZERA IL TABELLONE</button></div></dialog>
+  <dialog id="helpDialog" class="modal help-modal"><button type="button" id="closeHelp" class="modal-close" aria-label="Chiudi istruzioni"><svg><use href="#i-close"/></svg></button><div class="dialog-ornament">✦</div><h2>Come si gioca</h2><p>Gira la manovella o premi <strong>ESTRAI UN NUMERO</strong>. La pallina esce dall'urna e il numero viene evidenziato sul tabellone.</p><div class="instruction-grid"><div><strong>90 numeri</strong><span>Ogni numero esce una sola volta, senza ripetizioni.</span></div><div><strong>Proiezione</strong><span>Premi il pulsante schermo intero, in alto a destra.</span></div><div><strong>Si ricomincia</strong><span>Puoi annullare l'ultimo numero o avviare una nuova partita.</span></div><div><strong>Tutto salvato</strong><span>Le estrazioni restano memorizzate anche chiudendo l'app sullo stesso dispositivo.</span></div></div><p class="help-shortcuts">Tastiera: <kbd>Spazio</kbd> oppure <kbd>E</kbd> per estrarre · <kbd>Z</kbd> per annullare · <kbd>F</kbd> per schermo intero</p></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="screenReaderAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>

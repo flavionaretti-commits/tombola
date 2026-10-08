@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="30%" cy="20%" r="90%"><stop stop-color="#24505a"/><stop offset="1" stop-color="#092832"/></radialGradient>
+    <radialGradient id="ball" cx="30%" cy="20%" r="85%"><stop stop-color="#fff"/><stop offset=".72" stop-color="#fff4dc"/><stop offset="1" stop-color="#d4b879"/></radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff2bd"/><stop offset=".45" stop-color="#b77e3e"/><stop offset=".7" stop-color="#f1ce82"/><stop offset="1" stop-color="#865025"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <rect x="17" y="17" width="478" height="478" rx="96" fill="none" stroke="#d9b271" stroke-opacity=".7" stroke-width="5"/>
+  <circle cx="253" cy="232" r="153" fill="#547c76" fill-opacity=".22" stroke="url(#gold)" stroke-width="21"/>
+  <ellipse cx="253" cy="232" rx="66" ry="151" fill="none" stroke="#f0d398" stroke-opacity=".7" stroke-width="9"/>
+  <path d="M101 232H405M122 165H382M122 303H382" stroke="#e9bf78" stroke-width="8" stroke-opacity=".58"/>
+  <circle cx="253" cy="232" r="92" fill="url(#ball)" stroke="#d4a35e" stroke-width="13"/>
+  <circle cx="253" cy="232" r="69" fill="none" stroke="#eadbb7" stroke-width="3"/>
+  <text x="253" y="264" fill="#163842" font-family="Arial,Helvetica,sans-serif" font-weight="900" text-anchor="middle" font-size="105">90</text>
+  <path d="M404 232H445V171" stroke="url(#gold)" stroke-width="20" stroke-linecap="round" fill="none"/>
+  <circle cx="445" cy="170" r="19" fill="#efca7d" stroke="#fff2bf" stroke-width="5"/>
+  <path d="M190 377H316l23 32H167Z" fill="url(#gold)"/>
+  <rect x="142" y="404" width="222" height="20" rx="8" fill="#f4cf83"/>
+  <text x="253" y="462" text-anchor="middle" fill="#f4d391" font-family="Arial,sans-serif" font-weight="900" letter-spacing="5" font-size="35">TOMBOLA!</text>
+</svg>

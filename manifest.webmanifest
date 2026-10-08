@@ -1,0 +1,27 @@
+{
+  "name": "TOMBOLA! — La festa dei numeri",
+  "short_name": "TOMBOLA!",
+  "description": "L'urna animata e il grande tabellone dei 90 numeri. Senza ripetizioni, per le feste e per la scuola.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#092833",
+  "theme_color": "#092833",
+  "lang": "it",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
