@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=1.1">
   <title>TOMBOLA! — L'urna dei numeri</title>
 </head>
 <body data-theme="night">
@@ -78,14 +78,14 @@
               <circle cx="260" cy="207" r="150" fill="none" stroke="#ffe0a7" stroke-opacity=".54" stroke-width="2.7"/>
               <g clip-path="url(#sphereClip)">
                 <g class="balls-inside" id="ballsInside" filter="url(#ballShadow)">
-                  <g transform="translate(179 258)"><circle r="25" fill="#f8cd77"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">7</text></g>
-                  <g transform="translate(227 283)"><circle r="25" fill="#ed8b84"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">23</text></g>
-                  <g transform="translate(280 293)"><circle r="25" fill="#92bbae"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">52</text></g>
-                  <g transform="translate(325 258)"><circle r="25" fill="#d4a5dc"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">16</text></g>
-                  <g transform="translate(195 209)"><circle r="25" fill="#99bed6"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">88</text></g>
-                  <g transform="translate(255 234)"><circle r="25" fill="#eec37b"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">40</text></g>
-                  <g transform="translate(307 211)"><circle r="24" fill="#ef958c"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">3</text></g>
-                  <g transform="translate(239 178)"><circle r="25" fill="#a6cba8"/><circle cy="-3" r="17" fill="#fdf9e8"/><text y="4" text-anchor="middle" fill="#253744" font-family="Georgia" font-weight="bold" font-size="15">61</text></g>
+                  <g transform="translate(179 258)" class="ball ball-1"><g class="ball-sprite"><circle r="25" fill="#f8cd77"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
+                  <g transform="translate(227 283)" class="ball ball-2"><g class="ball-sprite"><circle r="25" fill="#ed8b84"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
+                  <g transform="translate(280 293)" class="ball ball-3"><g class="ball-sprite"><circle r="25" fill="#92bbae"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
+                  <g transform="translate(325 258)" class="ball ball-4"><g class="ball-sprite"><circle r="25" fill="#d4a5dc"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
+                  <g transform="translate(195 209)" class="ball ball-5"><g class="ball-sprite"><circle r="25" fill="#99bed6"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
+                  <g transform="translate(255 234)" class="ball ball-6"><g class="ball-sprite"><circle r="25" fill="#eec37b"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
+                  <g transform="translate(307 211)" class="ball ball-7"><g class="ball-sprite"><circle r="24" fill="#ef958c"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
+                  <g transform="translate(239 178)" class="ball ball-8"><g class="ball-sprite"><circle r="25" fill="#a6cba8"/><circle cx="-7" cy="-8" r="8.5" fill="#fff" fill-opacity=".65"/><ellipse cx="7" cy="9" rx="11" ry="7.5" fill="#263943" fill-opacity=".13"/></g></g>
                 </g>
                 <g class="cage-meridians" stroke="#d9a75c" stroke-opacity=".69" fill="none">
                   <ellipse cx="260" cy="207" rx="44" ry="163" stroke-width="2.5"/>
@@ -144,6 +144,6 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="screenReaderAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=1.1" defer></script>
 </body>
 </html>
