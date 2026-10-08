@@ -30,6 +30,13 @@
   const motionReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
   const cells = [];
   const projectionCells = [];
+  const urnBalls = Array.from($('ballsInside').querySelectorAll('.ball'));
+  const urnBallPositions = urnBalls.map(ball => {
+    const match = /translate\(([-\d.]+)\s+([-\d.]+)\)/.exec(ball.getAttribute('transform') || '');
+    if (!match) throw new Error('Posizione della pallina non valida');
+    return { x: Number(match[1]), y: Number(match[2]) };
+  });
+  let ballShuffleTimer = null;
   let projectionActive = false;
 
   function restore() {
@@ -124,7 +131,49 @@
       ? '<span class="tiny-sparkle">✦</span> LE PALLINE SI MESCOLANO… <span class="tiny-sparkle">✦</span>'
       : ended ? '<span class="tiny-sparkle">✦</span> TUTTI I 90 NUMERI ESTRATTI <span class="tiny-sparkle">✦</span>'
       : '<span class="tiny-sparkle">✦</span> TOCCA L’URNA O PREMI ESTRAI <span class="tiny-sparkle">✦</span>';
+    if (!drawing) positionUrnBalls();
     if (announce) announcement.textContent = latest === null ? 'Tabellone azzerato' : `Estratto il numero ${latest}. ${state.drawn.length} numeri su 90.`;
+  }
+
+
+  /* 20 palline decorative finché rimangono più di 20 numeri.
+     Da 20 numeri residui, una pallina sparisce a ogni estrazione. */
+  function urnVisibleCount() {
+    return Math.min(20, 90 - state.drawn.length);
+  }
+  function shufflePositions(positions) {
+    const result = positions.slice();
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = randomIndex(i + 1);
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+  function positionUrnBalls(positions = urnBallPositions) {
+    const count = urnVisibleCount();
+    urnBalls.forEach((ball, i) => {
+      const pos = positions[i] || urnBallPositions[i];
+      ball.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      ball.classList.toggle('is-hidden', i >= count);
+      ball.setAttribute('aria-hidden', String(i >= count));
+    });
+  }
+  function exchangeBallPositions() {
+    const count = urnVisibleCount();
+    const positions = urnBallPositions.slice();
+    const randomized = shufflePositions(positions.slice(0, count));
+    for (let i = 0; i < count; i++) positions[i] = randomized[i];
+    positionUrnBalls(positions);
+  }
+  function startBallMixing() {
+    stopBallMixing();
+    if (motionReduced || urnVisibleCount() <= 1) return;
+    exchangeBallPositions();
+    ballShuffleTimer = setInterval(exchangeBallPositions, 210);
+  }
+  function stopBallMixing() {
+    if (ballShuffleTimer !== null) clearInterval(ballShuffleTimer);
+    ballShuffleTimer = null;
   }
 
   function setTheme(mode) {
@@ -249,9 +298,11 @@
     scene.classList.add('is-spinning');
     render();
     startRattle();
+    startBallMixing();
     const n = randomRemainingNumber();
     await delay(motionReduced ? 230 : 1500);
     clearRattle();
+    stopBallMixing();
     scene.classList.remove('is-spinning');
     await flyBall(n);
     state.drawn.push(n);
