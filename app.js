@@ -36,6 +36,7 @@
     if (!match) throw new Error('Posizione della pallina non valida');
     return { x: Number(match[1]), y: Number(match[2]) };
   });
+  let ballPositions = urnBallPositions.map(p => ({...p}));
   let ballShuffleTimer = null;
   let projectionActive = false;
 
@@ -47,7 +48,11 @@
       if (!Number.isInteger(n) || n < 1 || n > 90 || unique.has(n)) return false;
       unique.add(n); return true;
     }) : [];
-    return { drawn, theme: raw.theme === 'day' ? 'day' : 'night', sound: raw.sound !== false };
+    const savedUrnPositions = Array.isArray(raw.urnPositions) && raw.urnPositions.length === 30 &&
+      raw.urnPositions.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) &&
+        p.x >= 90 && p.x <= 430 && p.y >= 40 && p.y <= 370)
+      ? raw.urnPositions.map(p => ({x:p.x,y:p.y})) : null;
+    return { drawn, theme: raw.theme === 'day' ? 'day' : 'night', sound: raw.sound !== false, urnPositions: savedUrnPositions };
   }
   const state = restore();
   function persist() {
@@ -136,44 +141,106 @@
   }
 
 
-  /* 20 palline decorative finché rimangono più di 20 numeri.
-     Da 20 numeri residui, una pallina sparisce a ogni estrazione. */
+  /* Le 30 palline rappresentano visivamente i numeri rimasti:
+     fino a 60 estrazioni rimangono 30, poi una scompare a ogni estrazione. */
   function urnVisibleCount() {
-    return Math.min(20, 90 - state.drawn.length);
+    return Math.min(30, 90 - state.drawn.length);
   }
-  function shufflePositions(positions) {
-    const result = positions.slice();
-    for (let i = result.length - 1; i > 0; i--) {
-      const j = randomIndex(i + 1);
-      [result[i], result[j]] = [result[j], result[i]];
-    }
-    return result;
+
+  function rememberBallPositions() {
+    state.urnPositions = ballPositions.map(p => ({x:p.x, y:p.y}));
   }
-  function positionUrnBalls(positions = urnBallPositions) {
+
+  function positionUrnBalls() {
     const count = urnVisibleCount();
     urnBalls.forEach((ball, i) => {
-      const pos = positions[i] || urnBallPositions[i];
-      ball.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-      ball.classList.toggle('is-hidden', i >= count);
-      ball.setAttribute('aria-hidden', String(i >= count));
+      const pos = ballPositions[i];
+      ball.style.transform = `translate(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px)`;
+      const hidden = i >= count;
+      ball.classList.toggle('is-hidden', hidden);
+      ball.setAttribute('aria-hidden', String(hidden));
     });
   }
+
+  /* Sposta realmente le palline fra loro, senza azzerare i colori
+     quando termina l'estrazione. I posti sono già raggruppati per gravità. */
   function exchangeBallPositions() {
     const count = urnVisibleCount();
-    const positions = urnBallPositions.slice();
-    const randomized = shufflePositions(positions.slice(0, count));
-    for (let i = 0; i < count; i++) positions[i] = randomized[i];
-    positionUrnBalls(positions);
+    if (count < 2) return;
+    const swaps = Math.max(2, Math.floor(count / 5));
+    for (let n = 0; n < swaps; n++) {
+      const i = randomIndex(count);
+      let j = randomIndex(count - 1);
+      if (j >= i) j++;
+      [ballPositions[i], ballPositions[j]] = [ballPositions[j], ballPositions[i]];
+    }
+    positionUrnBalls();
   }
+
   function startBallMixing() {
     stopBallMixing();
-    if (motionReduced || urnVisibleCount() <= 1) return;
+    if (urnVisibleCount() <= 1) return;
     exchangeBallPositions();
-    ballShuffleTimer = setInterval(exchangeBallPositions, 210);
+    if (!motionReduced) ballShuffleTimer = setInterval(exchangeBallPositions, 210);
   }
   function stopBallMixing() {
     if (ballShuffleTimer !== null) clearInterval(ballShuffleTimer);
     ballShuffleTimer = null;
+    /* Le posizioni finali rimangono quelle raggiunte, senza ritorno al layout di partenza. */
+    rememberBallPositions();
+  }
+
+  /* Piccola simulazione di gravità a cerchi rigidi: le palline rimaste
+     scivolano verso il fondo e riempiono i vuoti dopo ogni estrazione.
+     Mantiene l'identità cromatica e quindi l'ordine mescolato. */
+  function settleUnderGravity() {
+    const count = urnVisibleCount();
+    if (!count) { positionUrnBalls(); rememberBallPositions(); return; }
+    const radius = 17.35, circleRadius = 143.5, diameter = radius * 2;
+    const moving = ballPositions.slice(0, count).map(p => ({x:p.x,y:p.y,vx:0,vy:0}));
+    for (let step = 0; step < 350; step++) {
+      const previous = moving.map(p => ({x:p.x,y:p.y}));
+      for (const p of moving) {
+        p.vy = (p.vy + .36) * .94;
+        p.vx *= .89;
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+      for (let pass = 0; pass < 5; pass++) {
+        for (let i = 0; i < count; i++) {
+          for (let j = i + 1; j < count; j++) {
+            const a = moving[i],b = moving[j];
+            const dx = b.x - a.x, dy = b.y - a.y;
+            const distance = Math.hypot(dx,dy);
+            if (distance < diameter) {
+              const safe = distance || .001;
+              const displacement = (diameter - safe) * .5 + .008;
+              const x = distance ? dx / safe : 1;
+              const y = distance ? dy / safe : 0;
+              a.x -= x * displacement; a.y -= y * displacement;
+              b.x += x * displacement; b.y += y * displacement;
+            }
+          }
+        }
+        for (const p of moving) {
+          const dx = p.x - 260,dy = p.y - 207;
+          const d = Math.hypot(dx,dy);
+          if (d > circleRadius) {
+            p.x = 260 + dx * circleRadius / d;
+            p.y = 207 + dy * circleRadius / d;
+          }
+        }
+      }
+      for (let i = 0; i < count; i++) {
+        moving[i].vx = (moving[i].x - previous[i].x) * .63;
+        moving[i].vy = (moving[i].y - previous[i].y) * .63;
+      }
+    }
+    for (let i = 0; i < count; i++) {
+      ballPositions[i] = {x:moving[i].x,y:moving[i].y};
+    }
+    positionUrnBalls();
+    rememberBallPositions();
   }
 
   function setTheme(mode) {
@@ -306,6 +373,8 @@
     scene.classList.remove('is-spinning');
     await flyBall(n);
     state.drawn.push(n);
+    if (state.drawn.length >= 61) settleUnderGravity();
+    else { positionUrnBalls(); rememberBallPositions(); }
     persist();
     drawing = false;
     render({newest:n,announce:true});
@@ -319,12 +388,18 @@
   function undo() {
     if (drawing || state.drawn.length === 0) return;
     const removed = state.drawn.pop();
+    if (state.drawn.length >= 60) settleUnderGravity();
+    else positionUrnBalls();
+    rememberBallPositions();
     persist(); render({announce:true}); smallSound();
     showToast(`Numero ${removed} annullato: torna disponibile.`);
   }
   function reset() {
     if (drawing || state.drawn.length === 0) return;
     state.drawn.length = 0;
+    ballPositions = urnBallPositions.map(p => ({...p}));
+    positionUrnBalls();
+    rememberBallPositions();
     persist(); render({announce:true}); smallSound(false);
     showToast('Nuova partita! Tutti i numeri sono disponibili.');
   }
@@ -446,6 +521,8 @@
     }
   });
 
+  if (state.urnPositions) ballPositions = state.urnPositions.map(p => ({...p}));
+  else if (state.drawn.length > 60) settleUnderGravity();
   setTheme(state.theme);
   setSound(state.sound);
   render();
