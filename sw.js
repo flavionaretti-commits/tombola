@@ -1,6 +1,6 @@
 /* Offline shell. Network-first navigation prevents stale HTML after GitHub Pages updates. */
-const CACHE = 'tombola-shell-v1-6';
-const ASSETS = ['./','./index.html','./style.css?v=1.6','./app.js?v=1.6','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
+const CACHE = 'tombola-shell-v1-7';
+const ASSETS = ['./','./index.html','./style.css?v=1.7','./app.js?v=1.7','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });

@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css?v=1.6">
+  <link rel="stylesheet" href="style.css?v=1.7">
   <title>TOMBOLA! — L'urna dei numeri</title>
 </head>
 <body data-theme="night">
@@ -40,6 +40,7 @@
       <div class="topbar-right">
         <div class="fairness"><span class="fairness-dot"></span> Estrazione senza ripetizioni</div>
         <div class="toolbar" role="group" aria-label="Opzioni">
+          <button id="langButton" class="icon-button lang-button" type="button" aria-label="Lingua: Italiano. Passa all’inglese" title="Passa all’inglese"><span class="flagBall flag-uk" aria-hidden="true"></span></button>
           <button id="soundButton" class="icon-button" aria-label="Disattiva suoni" title="Attiva o disattiva i suoni"><svg><use href="#i-volume"/></svg></button>
           <button id="themeButton" class="icon-button" aria-label="Passa alla modalità giorno" title="Giorno / notte"><svg><use href="#i-sun"/></svg></button>
           <button id="projectionButton" class="icon-button projection-toggle" type="button" aria-label="Proietta il tabellone a tutto schermo" aria-pressed="false" title="Proietta soltanto il tabellone"><svg><use href="#i-project"/></svg><span>PROIETTA</span></button>
@@ -174,7 +175,7 @@
       </section>
     </main>
 
-    <footer class="bottom-decoration"><span>✧ &nbsp; UN PICCOLO CLASSICO, UNA GRANDE FESTA &nbsp; ✧</span><span>Creato da Flavio Naretti · TOMBOLA! v1.6</span></footer>
+    <footer class="bottom-decoration"><span>✧ &nbsp; UN PICCOLO CLASSICO, UNA GRANDE FESTA &nbsp; ✧</span><span>Creato da Flavio Naretti · TOMBOLA! v1.7</span></footer>
   </div>
 
 
@@ -202,6 +203,6 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="screenReaderAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
   <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
-  <script src="app.js?v=1.6" defer></script>
+  <script src="app.js?v=1.7" defer></script>
 </body>
 </html>

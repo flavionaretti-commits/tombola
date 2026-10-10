@@ -26,3 +26,6 @@ Non sono richiesti account, backend, dipendenze JavaScript né immagini esterne.
 ## Crediti
 
 Ideazione e direzione didattica: Flavio Naretti. Realizzazione della PWA: in collaborazione con ChatGPT.
+## Lingue / Languages
+
+Interfaccia, istruzioni e messaggi disponibili in italiano e inglese. Il pulsante con bandierina tonda (come in STORYDICE!) indica la lingua alternativa e la preferenza viene salvata localmente.

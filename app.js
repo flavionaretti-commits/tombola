@@ -10,6 +10,7 @@
   const resetButton = $('resetButton');
   const themeButton = $('themeButton');
   const soundButton = $('soundButton');
+  const langButton = $('langButton');
   const fullscreenButton = $('fullscreenButton');
   const projectionButton = $('projectionButton');
   const projectionView = $('projectionView');
@@ -52,7 +53,7 @@
       raw.urnPositions.every(p => p && Number.isFinite(p.x) && Number.isFinite(p.y) &&
         p.x >= 90 && p.x <= 430 && p.y >= 40 && p.y <= 370)
       ? raw.urnPositions.map(p => ({x:p.x,y:p.y})) : null;
-    return { drawn, theme: raw.theme === 'day' ? 'day' : 'night', sound: raw.sound !== false, urnPositions: savedUrnPositions };
+    return { drawn, theme: raw.theme === 'day' ? 'day' : 'night', sound: raw.sound !== false, lang: raw.lang === 'en' ? 'en' : 'it', urnPositions: savedUrnPositions };
   }
   const state = restore();
 
@@ -127,7 +128,7 @@
     el.className = 'number-cell';
     el.textContent = String(n);
     el.setAttribute('role', 'gridcell');
-    el.setAttribute('aria-label', `Numero ${n}, da estrarre`);
+    el.setAttribute('aria-label', `${tr('Numero')} ${n}, ${tr('da estrarre')}`);
     el.setAttribute('aria-selected', 'false');
     board.appendChild(el);
     cells.push(el);
@@ -135,6 +136,83 @@
     projected.classList.add('projection-cell');
     projectionBoard.appendChild(projected);
     projectionCells.push(projected);
+  }
+
+
+  /* Traduzione IT/EN con bandiera della lingua di destinazione, come STORYDICE!. */
+  const EN = {
+  "Numero": "Number",
+  "da estrarre": "not yet drawn",
+  "ultimo estratto": "most recently drawn",
+  "estratto": "drawn",
+  "Estratto": "Drawn",
+  "Tutti i numeri estratti!": "All numbers have been drawn!",
+  "Il primo della serata!": "The first number!",
+  "La fortuna ha scelto…": "And the lucky number is…",
+  "Pronti a giocare?": "Ready to play?",
+  "Nessun numero ancora estratto": "No numbers drawn yet",
+  "ESTRAZIONE IN CORSO…": "DRAW IN PROGRESS…",
+  "PARTITA COMPLETATA": "GAME COMPLETE",
+  "ESTRAI UN NUMERO": "DRAW A NUMBER",
+  "Le palline si mescolano…": "The balls are mixing…",
+  "Tutti i 90 numeri estratti!": "All 90 numbers drawn!",
+  "Pronti per l’estrazione": "Ready for the draw",
+  "Ultimo estratto: ": "Latest number: ",
+  "L’URNA STA GIRANDO…": "THE CAGE IS SPINNING…",
+  "LE PALLINE SI MESCOLANO…": "THE BALLS ARE MIXING…",
+  "TUTTI I 90 NUMERI ESTRATTI": "ALL 90 NUMBERS DRAWN",
+  "TOCCA L’URNA O PREMI ESTRAI": "TAP THE CAGE OR PRESS DRAW",
+  "Tabellone azzerato": "Board reset",
+  "Estratto il numero ": "Number drawn: ",
+  " numeri su 90.": " numbers out of 90.",
+  "Passa alla modalità giorno": "Switch to light mode",
+  "Passa alla modalità notte": "Switch to dark mode",
+  "Disattiva suoni": "Mute sound",
+  "Attiva suoni": "Enable sound",
+  "Tombola completa! Sono usciti tutti i 90 numeri.": "Game complete! All 90 numbers have been drawn.",
+  "Numero ": "Number ",
+  " annullato: torna disponibile.": " removed: it is available again.",
+  "Nuova partita! Tutti i numeri sono disponibili.": "New game! All 90 numbers are available.",
+  "Su iPad: Condividi → Aggiungi alla schermata Home per usarla a pieno schermo.": "On iPad: Share → Add to Home Screen to use full-screen mode.",
+  "Schermo intero non disponibile in questo browser.": "Full-screen mode is unavailable in this browser.",
+  "Esci da schermo intero": "Exit full screen",
+  "Schermo intero": "Full screen",
+  "Passa all’inglese": "Switch to English",
+  "Passa all’italiano": "Switch to Italian",
+  "Lingua: Italiano. Passa all’inglese": "Language: Italian. Switch to English",
+  "Lingua: Inglese. Passa all’italiano": "Language: English. Switch to Italian"
+};
+  function tr(italian) { return state.lang === 'en' ? (EN[italian] || italian) : italian; }
+  const translatedTexts = [[".brand-wordmark p","LA FESTA DEI NUMERI","THE FESTIVAL OF NUMBERS"],[".fairness","Estrazione senza ripetizioni","Draws without repeats"],["#projectionButton span","PROIETTA","PROJECT"],[".draw-heading .eyebrow","01 / L'ESTRAZIONE","01 / THE DRAW"],["#drawHeading","Gira la fortuna","Spin your luck"],[".result-eyebrow","ULTIMO NUMERO","LAST NUMBER"],["#undoButton span","ANNULLA","UNDO"],[".board-heading .eyebrow","02 / IL TABELLONE","02 / THE BOARD"],["#boardHeading","I numeri della sorte","The lucky numbers"],[".counter-pill small","ESTRATTI","DRAWN"],[".history .eyebrow","GLI ULTIMI ESTRATTI","RECENT NUMBERS"],["#resetButton span","NUOVA PARTITA","NEW GAME"],[".bottom-decoration span:first-child","✧   UN PICCOLO CLASSICO, UNA GRANDE FESTA   ✧","✧   A LITTLE CLASSIC, A BIG CELEBRATION   ✧"],[".bottom-decoration span:last-child","Creato da Flavio Naretti · TOMBOLA! v1.7","Created by Flavio Naretti · TOMBOLA! v1.7"],[".projection-kicker","LA FESTA DEI NUMERI","THE FESTIVAL OF NUMBERS"],[".projection-heading h2 small","TABELLONE","NUMBER BOARD"],[".projection-counter span","/ 90 ESTRATTI","/ 90 DRAWN"],[".projection-latest span","ULTIMO","LATEST"],["#closeProjectionButton span","ESCI","EXIT"],["#projectionUndoButton span","ANNULLA","UNDO"],["#resetDialog h2","Nuova partita?","Start a new game?"],["#resetDialog p","Il tabellone tornerà vuoto e tutti i 90 numeri saranno nuovamente disponibili.","The board will be cleared and all 90 numbers will be available again."],["#cancelReset","CONTINUA A GIOCARE","KEEP PLAYING"],["#confirmReset","AZZERA IL TABELLONE","RESET THE BOARD"],["#helpDialog h2","Come si gioca","How to play"],["#helpDialog .instruction-grid > div:nth-child(1) strong","90 numeri","90 numbers"],["#helpDialog .instruction-grid > div:nth-child(1) span","Ogni numero esce una sola volta, senza ripetizioni.","Each number can be drawn only once, with no repeats."],["#helpDialog .instruction-grid > div:nth-child(2) strong","Proiezione","Projection"],["#helpDialog .instruction-grid > div:nth-child(2) span","Premi PROIETTA per ingrandire soltanto il tabellone e continuare a estrarre i numeri.","Press PROJECT to enlarge just the number board and continue drawing."],["#helpDialog .instruction-grid > div:nth-child(3) strong","Si ricomincia","Starting over"],["#helpDialog .instruction-grid > div:nth-child(3) span","Puoi annullare l'ultimo numero o avviare una nuova partita.","You can undo the latest number or start a new game."],["#helpDialog .instruction-grid > div:nth-child(4) strong","Tutto salvato","Automatically saved"],["#helpDialog .instruction-grid > div:nth-child(4) span","Le estrazioni restano memorizzate anche chiudendo l'app sullo stesso dispositivo.","Your draws are saved even if you close the app on this device."]];
+  const translatedHtml = [["#helpDialog > p:not(.help-shortcuts)","Gira la manovella o premi <strong>ESTRAI UN NUMERO</strong>. La pallina esce dall'urna e il numero viene evidenziato sul tabellone.","Turn the handle or press <strong>DRAW A NUMBER</strong>. A ball leaves the cage and the number is highlighted on the board."],["#helpDialog .help-shortcuts","Tastiera: <kbd>Spazio</kbd> oppure <kbd>E</kbd> per estrarre · <kbd>Z</kbd> per annullare · <kbd>F</kbd> per schermo intero · <kbd>P</kbd> per proiettare","Keyboard: <kbd>Space</kbd> or <kbd>E</kbd> to draw · <kbd>Z</kbd> to undo · <kbd>F</kbd> for full screen · <kbd>P</kbd> for projection"]];
+  const translatedAttributes = [[".brand","aria-label","Tombola","Tombola"],[".toolbar","aria-label","Opzioni","Options"],["#projectionButton","aria-label","Proietta il tabellone a tutto schermo","Project the number board full screen"],["#projectionButton","title","Proietta soltanto il tabellone","Project only the number board"],["#soundButton","title","Attiva o disattiva i suoni","Toggle sound"],["#themeButton","title","Giorno / notte","Light / dark"],["#fullscreenButton","title","Schermo intero","Full screen"],["#helpButton","title","Istruzioni","Instructions"],["#helpButton","aria-label","Istruzioni","Instructions"],["#lotteryMachine","aria-label","Urna della tombola con sfera trasparente, palline colorate e manovella dorata","Tombola cage with a transparent sphere, colored balls, and golden handle"],["#machineButton","aria-label","Gira la manovella ed estrai un numero","Turn the handle and draw a number"],["#machineButton","title","Tocca l'urna per estrarre","Tap the cage to draw"],["#undoButton","title","Annulla l'ultima estrazione","Undo the most recent draw"],["#board","aria-label","Tabellone della tombola, 90 numeri","Tombola board, 90 numbers"],["#historyNumbers","aria-label","Ultimi numeri estratti","Recently drawn numbers"],["#projectionView","aria-label","Tabellone della tombola in proiezione","Projected Tombola board"],["#projectionBoard","aria-label","Tabellone della tombola a tutto schermo","Full-screen Tombola board"],["#closeProjectionButton","aria-label","Esci dalla proiezione","Exit projection"],["#closeHelp","aria-label","Chiudi istruzioni","Close instructions"]];
+  function applyLanguage(lang) {
+    state.lang = lang === 'en' ? 'en' : 'it';
+    const en = state.lang === 'en';
+    document.documentElement.lang = state.lang;
+    langButton.innerHTML = '<span class="flagBall '+(en ? 'flag-it' : 'flag-uk')+'" aria-hidden="true"></span>';
+    langButton.setAttribute('title',tr(en ? 'Passa all’italiano' : 'Passa all’inglese'));
+    langButton.setAttribute('aria-label',tr(en ? 'Lingua: Inglese. Passa all’italiano' : 'Lingua: Italiano. Passa all’inglese'));
+    translatedTexts.forEach(([selector,it,english])=>{
+      const el = document.querySelector(selector);
+      if (el) el.textContent = en ? english : it;
+    });
+    translatedHtml.forEach(([selector,it,english])=>{
+      const el = document.querySelector(selector);
+      if (el) el.innerHTML = en ? english : it;
+    });
+    translatedAttributes.forEach(([selector,attr,it,english])=>{
+      const el = document.querySelector(selector);
+      if (el) el.setAttribute(attr,en ? english : it);
+    });
+    document.title = en ? 'TOMBOLA! — The number-drawing cage' : "TOMBOLA! — L'urna dei numeri";
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.setAttribute('content',en ? 'TOMBOLA! Animated number-drawing cage and board with 90 numbers. Random draws without repeats.' : "TOMBOLA! L'urna animata e il tabellone dei 90 numeri. Estrazioni casuali senza ripetizioni, per giocare insieme anche sul grande schermo.");
+    setTheme(state.theme);
+    setSound(state.sound);
+    fullscreenButton.setAttribute('aria-label',tr(document.fullscreenElement ? 'Esci da schermo intero' : 'Schermo intero'));
+    render();
+    persist();
   }
 
   function render({ newest = null, announce = false } = {}) {
@@ -147,7 +225,7 @@
         cell.classList.toggle('is-drawn', selected);
         cell.classList.toggle('is-latest', n === latest);
         cell.setAttribute('aria-selected', String(selected));
-        cell.setAttribute('aria-label', `Numero ${n}, ${selected ? (n === latest ? 'ultimo estratto' : 'estratto') : 'da estrarre'}`);
+        cell.setAttribute('aria-label', `${tr('Numero')} ${n}, ${selected ? (n === latest ? tr('ultimo estratto') : tr('estratto')) : tr('da estrarre')}`);
         if (newest === n) {
           cell.classList.remove('just-drawn');
           void cell.offsetWidth;
@@ -163,25 +241,25 @@
     resultBall.classList.toggle('has-result', latest !== null);
     resultBall.classList.toggle('finished', state.drawn.length === 90);
     if (state.drawn.length === 90) {
-      resultSubtitle.textContent = 'Tutti i numeri estratti!';
+      resultSubtitle.textContent = tr('Tutti i numeri estratti!');
     } else if (latest !== null) {
-      resultSubtitle.textContent = state.drawn.length === 1 ? 'Il primo della serata!' : 'La fortuna ha scelto…';
+      resultSubtitle.textContent = state.drawn.length === 1 ? tr('Il primo della serata!') : tr('La fortuna ha scelto…');
     } else {
-      resultSubtitle.textContent = 'Pronti a giocare?';
+      resultSubtitle.textContent = tr('Pronti a giocare?');
     }
     const history = $('historyNumbers');
     history.replaceChildren();
     if (state.drawn.length === 0) {
       const empty = document.createElement('span');
       empty.className = 'empty-history';
-      empty.textContent = 'Nessun numero ancora estratto';
+      empty.textContent = tr('Nessun numero ancora estratto');
       history.appendChild(empty);
     } else {
       state.drawn.slice(-7).reverse().forEach(n => {
         const chip = document.createElement('span');
         chip.className = 'history-chip';
         chip.textContent = n;
-        chip.setAttribute('aria-label', `Estratto ${n}`);
+        chip.setAttribute('aria-label', `${tr('Estratto')} ${n}`);
         history.appendChild(chip);
       });
     }
@@ -190,17 +268,17 @@
     machineButton.disabled = drawing || ended;
     projectionDrawButton.disabled = drawing || ended;
     projectionUndoButton.disabled = drawing || state.drawn.length === 0;
-    $('projectionDrawLabel').textContent = drawing ? 'ESTRAZIONE IN CORSO…' : ended ? 'PARTITA COMPLETATA' : 'ESTRAI UN NUMERO';
-    $('projectionMessage').textContent = drawing ? 'Le palline si mescolano…' : ended ? 'Tutti i 90 numeri estratti!' : latest === null ? 'Pronti per l’estrazione' : 'Ultimo estratto: ' + latest;
+    $('projectionDrawLabel').textContent = drawing ? tr('ESTRAZIONE IN CORSO…') : ended ? tr('PARTITA COMPLETATA') : tr('ESTRAI UN NUMERO');
+    $('projectionMessage').textContent = drawing ? tr('Le palline si mescolano…') : ended ? tr('Tutti i 90 numeri estratti!') : latest === null ? tr('Pronti per l’estrazione') : tr('Ultimo estratto: ') + latest;
     undoButton.disabled = drawing || state.drawn.length === 0;
     resetButton.disabled = drawing || state.drawn.length === 0;
-    $('drawButtonLabel').textContent = drawing ? 'L’URNA STA GIRANDO…' : ended ? 'PARTITA COMPLETATA' : 'ESTRAI UN NUMERO';
+    $('drawButtonLabel').textContent = drawing ? tr('L’URNA STA GIRANDO…') : ended ? tr('PARTITA COMPLETATA') : tr('ESTRAI UN NUMERO');
     $('spinningText').innerHTML = drawing
-      ? '<span class="tiny-sparkle">✦</span> LE PALLINE SI MESCOLANO… <span class="tiny-sparkle">✦</span>'
-      : ended ? '<span class="tiny-sparkle">✦</span> TUTTI I 90 NUMERI ESTRATTI <span class="tiny-sparkle">✦</span>'
-      : '<span class="tiny-sparkle">✦</span> TOCCA L’URNA O PREMI ESTRAI <span class="tiny-sparkle">✦</span>';
+      ? '<span class="tiny-sparkle">✦</span> ' + tr('LE PALLINE SI MESCOLANO…') + ' <span class="tiny-sparkle">✦</span>'
+      : ended ? '<span class="tiny-sparkle">✦</span> ' + tr('TUTTI I 90 NUMERI ESTRATTI') + ' <span class="tiny-sparkle">✦</span>'
+      : '<span class="tiny-sparkle">✦</span> ' + tr('TOCCA L’URNA O PREMI ESTRAI') + ' <span class="tiny-sparkle">✦</span>';
     if (!drawing) positionUrnBalls();
-    if (announce) announcement.textContent = latest === null ? 'Tabellone azzerato' : `Estratto il numero ${latest}. ${state.drawn.length} numeri su 90.`;
+    if (announce) announcement.textContent = latest === null ? tr('Tabellone azzerato') : `${tr('Estratto il numero ')}${latest}. ${state.drawn.length}${tr(' numeri su 90.')}`;
   }
 
 
@@ -310,14 +388,14 @@
     state.theme = mode;
     document.body.dataset.theme = mode;
     themeButton.querySelector('use').setAttribute('href', mode === 'night' ? '#i-sun' : '#i-moon');
-    themeButton.setAttribute('aria-label', mode === 'night' ? 'Passa alla modalità giorno' : 'Passa alla modalità notte');
+    themeButton.setAttribute('aria-label', mode === 'night' ? tr('Passa alla modalità giorno') : tr('Passa alla modalità notte'));
     persist();
   }
   function setSound(enabled) {
     state.sound = enabled;
     soundButton.querySelector('use').setAttribute('href', enabled ? '#i-volume' : '#i-volume-off');
     soundButton.classList.toggle('is-off', !enabled);
-    soundButton.setAttribute('aria-label', enabled ? 'Disattiva suoni' : 'Attiva suoni');
+    soundButton.setAttribute('aria-label', enabled ? tr('Disattiva suoni') : tr('Attiva suoni'));
     persist();
   }
   function randomIndex(size) {
@@ -447,7 +525,7 @@
     extractionSound();
     if (state.drawn.length === 90) {
       showerConfetti();
-      showToast('Tombola completa! Sono usciti tutti i 90 numeri.');
+      showToast(tr('Tombola completa! Sono usciti tutti i 90 numeri.'));
     }
   }
   function undo() {
@@ -457,7 +535,7 @@
     else positionUrnBalls();
     rememberBallPositions();
     persist(); render({announce:true}); smallSound();
-    showToast(`Numero ${removed} annullato: torna disponibile.`);
+    showToast(`${tr('Numero ')}${removed}${tr(' annullato: torna disponibile.')}`);
   }
   function reset() {
     if (drawing || state.drawn.length === 0) return;
@@ -466,7 +544,7 @@
     positionUrnBalls();
     rememberBallPositions();
     persist(); render({announce:true}); smallSound(false);
-    showToast('Nuova partita! Tutti i numeri sono disponibili.');
+    showToast(tr('Nuova partita! Tutti i numeri sono disponibili.'));
   }
   function showToast(message) {
     const el = $('toast');
@@ -511,10 +589,10 @@
       } else if (document.documentElement.requestFullscreen) {
         await document.documentElement.requestFullscreen();
       } else {
-        showToast('Su iPad: Condividi → Aggiungi alla schermata Home per usarla a pieno schermo.');
+        showToast(tr('Su iPad: Condividi → Aggiungi alla schermata Home per usarla a pieno schermo.'));
       }
     } catch {
-      showToast('Schermo intero non disponibile in questo browser.');
+      showToast(tr('Schermo intero non disponibile in questo browser.'));
     }
   }
 
@@ -563,11 +641,12 @@
   $('closeHelp').addEventListener('click',() => closeDialog(helpDialog));
   themeButton.addEventListener('click',() => setTheme(state.theme === 'night' ? 'day' : 'night'));
   soundButton.addEventListener('click',() => { setSound(!state.sound); if (state.sound) { getAudio(); smallSound(false); } });
+  langButton.addEventListener('click',() => { applyLanguage(state.lang === 'it' ? 'en' : 'it'); if (state.sound) smallSound(false); });
   fullscreenButton.addEventListener('click',toggleFullscreen);
   document.addEventListener('fullscreenchange',() => {
     const on = !!document.fullscreenElement;
     fullscreenButton.querySelector('use').setAttribute('href',on?'#i-minimize':'#i-expand');
-    fullscreenButton.setAttribute('aria-label',on?'Esci da schermo intero':'Schermo intero');
+    fullscreenButton.setAttribute('aria-label',on?tr('Esci da schermo intero'):tr('Schermo intero'));
   });
   document.addEventListener('keydown',event => {
     const target = event.target;
@@ -588,9 +667,7 @@
 
   if (state.urnPositions) ballPositions = state.urnPositions.map(p => ({...p}));
   else if (state.drawn.length > 40) settleUnderGravity();
-  setTheme(state.theme);
-  setSound(state.sound);
-  render();
+  applyLanguage(state.lang);
   if ('serviceWorker' in navigator && /^(https?:)$/.test(location.protocol)) {
     window.addEventListener('load',() => navigator.serviceWorker.register('./sw.js').catch(() => {}));
   }

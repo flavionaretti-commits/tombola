@@ -111,3 +111,14 @@ body[data-theme="day"] .projection-close,body[data-theme="day"] .projection-undo
 .machine-scene.is-spinning .ball-48 .ball-sprite{animation:mixBall8 0.220s ease-in-out infinite alternate}
 .machine-scene.is-spinning .ball-49 .ball-sprite{animation:mixBall5 0.234s ease-in-out infinite alternate}
 .machine-scene.is-spinning .ball-50 .ball-sprite{animation:mixBall2 0.248s ease-in-out infinite alternate}
+
+/* Bandierine circolari esattamente nello stile di STORYDICE!:
+   si visualizza la bandiera della lingua verso cui si può passare. */
+.lang-button{padding:0;flex:none;display:inline-grid;place-items:center}
+.flagBall{width:25px;height:25px;border-radius:50%;display:block;position:relative;overflow:hidden;border:1px solid rgba(16,47,92,.12);box-shadow:inset 0 1px 1px rgba(255,255,255,.45),0 1px 2px rgba(0,0,0,.12)}
+.flag-it{background:linear-gradient(90deg,#009246 0 33.33%,#fff 33.33% 66.66%,#ce2b37 66.66%)}
+.flag-uk{background:#012169}
+.flag-uk:before,.flag-uk:after{content:"";position:absolute;inset:0}
+.flag-uk:before{background:linear-gradient(90deg,transparent 38%,#fff 38% 62%,transparent 62%),linear-gradient(transparent 38%,#fff 38% 62%,transparent 62%),linear-gradient(26deg,transparent 43%,#fff 43% 49%,transparent 49% 51%,#fff 51% 57%,transparent 57%),linear-gradient(-26deg,transparent 43%,#fff 43% 49%,transparent 49% 51%,#fff 51% 57%,transparent 57%)}
+.flag-uk:after{background:linear-gradient(90deg,transparent 44%,#c8102e 44% 56%,transparent 56%),linear-gradient(transparent 44%,#c8102e 44% 56%,transparent 56%),linear-gradient(26deg,transparent 46%,#c8102e 46% 48.5%,transparent 48.5% 51.5%,#c8102e 51.5% 54%,transparent 54%),linear-gradient(-26deg,transparent 46%,#c8102e 46% 48.5%,transparent 48.5% 51.5%,#c8102e 51.5% 54%,transparent 54%)}
+@media(max-width:710px){.lang-button .flagBall{width:23px;height:23px}}
